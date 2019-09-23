@@ -10,8 +10,8 @@ to download the entire repository using the following:
 
 ```text
 pastebin get wPtGKMam github
-github tjstretchalot turtles2 turtles2 .
-cd turtles2
+github tjstretchalot turtles2 ./ .
+cd turtles2/turtles2
 tests/hello.lua
 ```
 

@@ -31,7 +31,8 @@ local cached_path_arr = nil
 local function split_path_element(ele)
     local question_ind = nil
     for i=1, #ele do
-        if ele[i] == '?' then
+        local ch = string.sub(ele, i, i)
+        if ch == '?' then
             if question_ind ~= nil then
                 error('element ' .. ele .. ' has multiple question marks')
             end
@@ -62,7 +63,8 @@ local function get_path_arr(path)
     local current_start = 1
 
     for i = 2, #path do
-        if path[i] == ';' then
+        local ch = string.sub(path, i, i)
+        if ch == ';' then
             if i > current_start then
                 result[#result + 1] = string.sub(path, current_start, i - 1)
             end
