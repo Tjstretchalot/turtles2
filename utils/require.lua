@@ -7,16 +7,21 @@
 -- which are meant to act similar to the default. The exact preloading
 -- is not the same in all cases and this does not define preload/loadlib.
 --
--- The package path is initialized to search one directory up from this
--- file.
+-- The package path is initialized to search one directory up from the
+-- current running file. This can be overriden by defining the global
+-- require_relative_file
 
 if require then return end
 
 package = {}
 package.loaded = {}
 
-local file_loc = shell.getRunningProgram()
-local folder_loc = shell.resolve(file_loc .. '/..')
+if type(require_relative_file) ~= 'string' then
+    require_relative_file = shell.getRunningProgram()
+end
+
+local file_loc = require_relative_file
+local folder_loc = shell.resolve('/' .. file_loc .. '/../..')
 package.path = folder_loc .. '/?;' .. folder_loc .. '/?.lua'
 
 local cached_path = nil
@@ -96,7 +101,7 @@ function require(modname)
 
     for i = 1, #cached_path_arr do
         local ele = cached_path_arr[i]
-        local tar_path = shell.resolve(ele[1] .. modname .. ele[2])
+        local tar_path = shell.resolve('/' .. ele[1] .. modname .. ele[2])
 
         if package.loaded[tar_path] then
             return package.loaded[tar_path]
@@ -106,6 +111,12 @@ function require(modname)
             package.loaded[tar_path] = dofile(tar_path)
             return package.loaded[tar_path]
         end
+    end
+
+    for i = 1, #cached_path_arr do
+        local ele = cached_path_arr[i]
+        local tar_path = shell.resolve('/' .. ele[1] .. modname .. ele[2])
+        print('checked ' .. tar_path)
     end
 
     error('failed to find module ' .. modname)

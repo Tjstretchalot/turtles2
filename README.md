@@ -15,3 +15,5 @@ cd turtles2/turtles2
 tests/hello.lua
 ```
 
+Be aware that this method is limited to 60 files per hour which is not very
+many. You may need to copy files over ftp / locally / download the zip.
