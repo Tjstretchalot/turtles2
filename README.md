@@ -16,4 +16,6 @@ tests/hello.lua
 ```
 
 Be aware that this method is limited to 60 files per hour which is not very
-many. You may need to copy files over ftp / locally / download the zip.
+many. You may need to copy files over ftp / locally / download the zip. At
+the very least, using this method, you should use a disk and copy files from
+that disk around to all your turtles.
