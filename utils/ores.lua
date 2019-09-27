@@ -321,6 +321,12 @@ function OreContext.recover_possible(filen)
     local bak_exists = fs.exists(filen .. '.bak')
     local bak2_exists = fs.exists(filen .. '.bak2')
     local post_exists = fs.exists(filen .. '.post')
+    local deleting_exists = fs.exists(filen .. '.deleting')
+
+    if deleting_exists then
+        -- Crashed while deleting files
+        return {OreContext:new(filen)}
+    end
 
     if bak2_exists then
         -- Failed during clean_and_save; if we can recover bak2 that is the
@@ -472,8 +478,10 @@ end
 -- we can handle crashing at any time during this process. This assumes
 -- that if bak2 already exists we don't need to replace it.
 function OreContext:clean_and_save()
-    if not fs.exists(self.filen .. '.bak2') then
+    if (fs.exists(self.filen .. '.deleting')
+            or not fs.exists(self.filen .. '.bak2')) then
         self:_serialize(self.filen .. '.bak2')
+        fs.delete(self.filen .. '.deleting')
     end
     if fs.exists(self.filen) then fs.delete(self.filen) end
     if fs.exists(self.filen .. '.bak') then fs.delete(self.filen .. '.bak') end
@@ -482,6 +490,20 @@ function OreContext:clean_and_save()
     end
     self:_serialize(self.filen)
     fs.delete(self.filen .. '.bak2')
+end
+
+--- Clears all saved files. This is not recoverable. This operation will
+-- never leave the files in a corrupted state.
+function OreContext:clean()
+    local h = fs.open(self.filen .. '.deleting', 'w')
+    h.write('\n')
+    h.close()
+
+    fs.delete(self.filen .. '.post')
+    fs.delete(self.filen .. '.bak')
+    fs.delete(self.filen)
+    fs.delete(self.filen .. '.bak2')
+    fs.delete(self.filen .. '.deleting')
 end
 
 --- Returns the index in queued moves that we should perform next,
@@ -628,6 +650,18 @@ function OreContext:next(filter)
         self:_serialize(self.filen .. '.bak')
         while not turtle[act]() do
             fs.delete(self.filen .. '.bak')
+            if act == 'back' then
+                self._current_path[self._current_path_ind] = 'forward'
+                table.insert(self._current_path, self._current_path_ind, 'turnLeft')
+                table.insert(self._current_path, self._current_path_ind, 'turnLeft')
+                table.insert(self._current_path, self._current_path + 3, 'turnLeft')
+                table.insert(self._current_path, self._current_path + 3, 'turnLeft')
+                return true
+            end
+            local fn_ind = constants.MOVE_TO_FN_IND[act]
+            if fn_ind ~= nil then
+                turtle[constants.DIG_FN[fn_ind]]()
+            end
             os.sleep(1)
             self:_serialize(self.filen .. '.bak')
         end

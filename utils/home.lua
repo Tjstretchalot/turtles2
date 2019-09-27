@@ -59,6 +59,37 @@ function home.loc()
     return vector.new(home._loc.x, home._loc.y, home._loc.z), home._loc.dir
 end
 
+--- Returns a new location which is the given absolute location and absolute
+-- direction as if it were found using relative location and relative direction.
+-- @param loc vector the location to make relative
+-- @param number dir the direction to make relative
+-- @return rloc, rdir the same location but relative to the home
+function home.make_relative(loc, dir)
+    local hloc, hdir = home.loc()
+    local rloc = loc - hloc
+    local rdir = dir - hdir
+    if rdir < 0 then rdir = rdir + 4 end
+
+
+    if hdir == 1 then
+        -- +z becomes -x, +x becomes +z
+        local tmp = rloc.z
+        rloc.z = -rloc.x
+        rloc.x = tmp
+    elseif hdir == 2 then
+        -- +z becomes -z, +x becomes -x
+        rloc.z = -rloc.z
+        rloc.x = -rloc.x
+    elseif hdir == 3 then
+        -- +z becomes +x, +x becomes -z
+        local tmp = rloc.z
+        rloc.z = rloc.x
+        rloc.x = -tmp
+    end
+
+    return rloc, rdir
+end
+
 --- Determines if the home location is in absolute or relative coordinates
 -- @return boolean true if home is relative, false if home is absolute
 function home.absolute()

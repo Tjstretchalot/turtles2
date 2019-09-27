@@ -159,13 +159,14 @@ local IND_ACT_FROM_PARENT = 8   -- Action from parent to here (str)
 -- is not specified, it is guarranteed we do not back into the end block.
 -- @param heuristic the heuristic function to use, which must be consistent
 -- for optimal paths.
--- @param
+-- @param prevent_back if true, no back moves are made.
 -- @return table contains strings where each string is a name of a
 -- function in the turtle module to be performed from start to
 -- end. Note that the end point is assumed to be empty regardless
 -- of world. Returns nil if no path is possible
 function paths.determine_path(world, world_empty, start, start_dir, end_,
-                              end_dir, heuristic)
+                              end_dir, heuristic, prevent_back)
+    prevent_back = not not prevent_back
     local open = PQue:new()
     local open_contains = {} -- keys are tostring(v) .. ':' .. tostring(reldir)
     local closed = {} -- keys are as above. really we could merge open_contains
@@ -286,13 +287,15 @@ function paths.determine_path(world, world_empty, start, start_dir, end_,
         )
         if res then return res end
 
-        -- back
-        res = handle_neighbor(
-            cur, cur[IND_VECTOR] + constants.DIR_TO_DELTA[
-                constants.BACK_DIRS[cur[IND_DIR]]], nil,
-            cur[IND_DIR], 'back'
-        )
-        if res then return res end
+        if not prevent_back then
+            -- back
+            res = handle_neighbor(
+                cur, cur[IND_VECTOR] + constants.DIR_TO_DELTA[
+                    constants.BACK_DIRS[cur[IND_DIR]]], nil,
+                cur[IND_DIR], 'back'
+            )
+            if res then return res end
+        end
     end
 
     return nil

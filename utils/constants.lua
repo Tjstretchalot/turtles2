@@ -77,6 +77,16 @@ constants.INSPECT_FN = {'inspectUp', 'inspectDown', 'inspect'}
 -- detect function.
 constants.DETECT_FN = {'detectUp', 'detectDown', 'detect'}
 
+--- DETECT_FN for suck
+constants.SUCK_FN = {'suckUp', 'suckDown', 'suck'}
+
+--- DETECT_FN for drop
+constants.DROP_FN = {'dropUp', 'dropDown', 'drop'}
+
+--- DETECT_FN for place
+constants.PLACE_FN = {'placeUp', 'placeDown', 'place'}
+
+
 --- Takes two keys; the first is the current relative direction. The second is
 -- the relative offset for a block. The value is nil if that block cannot be
 -- dug/inspected from the current position. Otherwise, returns the index in
@@ -104,5 +114,14 @@ constants.DIR_AND_DELTA_TO_FN_IND = {
         ['1,0,0'] = 3
     },
 }
+
+constants.MOVE_TO_FN_IND = {
+    up = 1,
+    down = 2,
+    forward = 3
+}
+
+constants.TIME_MORNING = 6
+constants.TIME_EVENING = 19
 
 return constants
