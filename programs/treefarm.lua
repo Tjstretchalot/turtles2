@@ -280,7 +280,7 @@ local function select_count_saplings()
         if data == nil then
             if empty == nil then empty = i end
         elseif SAPLING_NAMES[data.name] then
-            if sum == 0 then
+            if sm == 0 then
                 turtle.select(i)
             end
             sm = sm + data.count
