@@ -612,6 +612,7 @@ end
 -- @return int|nil the function index or nil if none work
 function OreContext:_get_fn_ind_or_set_path(tar)
     local delta = tar - self.cur_rel_loc
+    if delta:length() == 0 then return false, nil end
     local delta_s = tostring(delta)
     local ind = constants.DIR_AND_DELTA_TO_FN_IND[self.cur_rel_dir][delta_s]
     if not ind then
@@ -628,9 +629,9 @@ function OreContext:_get_fn_ind_or_set_path(tar)
         end
         self._current_path[#self._current_path] = nil
         if #self._current_path <= 0 then error('delta_s = ' .. delta_s) end
-        return nil
+        return true, nil
     end
-    return ind
+    return true, ind
 end
 
 --- Performs the next queued operation. Returns true if there are more queued
@@ -695,10 +696,12 @@ function OreContext:next(filter)
     end
 
     if self.current_dig ~= nil then
-        local dig_i = self:_get_fn_ind_or_set_path(self.current_dig)
-        if not dig_i then return self:next(filter) end
-        if turtle[constants.DETECT_FN[dig_i]]() then
-            turtle[constants.DIG_FN[dig_i]]()
+        local succ, dig_i = self:_get_fn_ind_or_set_path(self.current_dig)
+        if succ then
+            if not dig_i then return self:next(filter) end
+            if turtle[constants.DETECT_FN[dig_i]]() then
+                turtle[constants.DIG_FN[dig_i]]()
+            end
         end
         self.empty_tiles[tostring(self.current_dig)] = true
         self.current_dig = nil
@@ -707,9 +710,14 @@ function OreContext:next(filter)
     end
 
     if self.current_node ~= nil then
-        local ins_i = self:_get_fn_ind_or_set_path(self.current_node)
-        if not ins_i then return self:next(filter) end
-        self:_inspect_with(constants.INSPECT_FN[ins_i], filter)
+        local succ, ins_i = self:_get_fn_ind_or_set_path(self.current_node)
+        if succ then
+            if not ins_i then return self:next(filter) end
+            self:_inspect_with(constants.INSPECT_FN[ins_i], filter)
+        else
+            self.empty_tiles[tostring(self.current_node)] = true
+            self.current_node = nil
+        end
         self:clean_and_save()
         return true
     end
