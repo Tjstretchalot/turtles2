@@ -654,8 +654,8 @@ function OreContext:next(filter)
                 self._current_path[self._current_path_ind] = 'forward'
                 table.insert(self._current_path, self._current_path_ind, 'turnLeft')
                 table.insert(self._current_path, self._current_path_ind, 'turnLeft')
-                table.insert(self._current_path, self._current_path + 3, 'turnLeft')
-                table.insert(self._current_path, self._current_path + 3, 'turnLeft')
+                table.insert(self._current_path, self._current_path_ind + 3, 'turnLeft')
+                table.insert(self._current_path, self._current_path_ind + 3, 'turnLeft')
                 return true
             end
             local fn_ind = constants.MOVE_TO_FN_IND[act]
