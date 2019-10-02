@@ -76,10 +76,16 @@ for x = 0, -8, -1 do
     for z = 0, 11, 1 do
         for y = 0, 8, 1 do
             local key = tostring(vector.new(x, y, z))
-            if not SAPLINGS_LOOKUP[key] then
-                WORLD[key] = true
-            end
+            WORLD[key] = true
         end
+    end
+end
+
+-- avoid walking through saplings or above them
+for _, loc in ipairs(SAPLINGS) do
+    for dy=0, 8, 1 do
+        local nvec = vector.new(loc.x, loc.y + dy, loc.z)
+        WORLD[tostring(nvec)] = nil
     end
 end
 
@@ -100,6 +106,8 @@ local move_state = require('utils/move_state')
 local startup = require('utils/startup')
 local paths = require('utils/paths')
 local constants = require('utils/constants')
+local path_utils = require('utils/path_utils')
+local inv = require('utils/inv')
 
 -- Objectives
 local OBJ_IDLE = 'idle' -- Nothing to do
@@ -177,79 +185,15 @@ local function ores_filter(data)
     return not not GROWTHS[data.name]
 end
 
-
 local function set_path(store, mem, rdest)
-    local rstart, rdir = home.make_relative(
-        vector.new(store.raw.move_state.position.x,
-                   store.raw.move_state.position.y,
-                   store.raw.move_state.position.z),
-        store.raw.move_state.dir)
-    mem.current_path = paths.determine_path(
-        WORLD,
-        true,
-        rstart,
-        rdir,
-        rdest,
-        nil,
-        paths.manhattan_consistent,
-        true -- prevent back to avoid getting stuck in leaves
-    )
-    if mem.current_path == nil then
-        textutils.slowPrint('failed to find a path')
-        textutils.slowPrint('rdest=' .. tostring(rdest))
-        textutils.slowPrint('rstart=' .. tostring(rstart))
-        textutils.slowPrint('failed to find a path between '
-                            .. textutils.serialize(rstart)
-                            .. ' and '
-                            .. textutils.serialize(rdest))
-        mem.current_path_ind = nil
-        return false
-    end
-    mem.current_path_ind = 1
-    return true
+    return path_utils.set_path(store, mem, rdest, WORLD, true, true)
 end
 
---- Returns true if theres more to do before last move, false otherwise
 local function tick_path(store, mem)
-    if mem.current_path == nil then
-        error('tick_path with no path', 2)
-    end
-
-    if mem.current_path_ind >= #mem.current_path then
-        return false
-    end
-
-    local nxt = mem.current_path[mem.current_path_ind]
-    local fn_ind = constants.MOVE_TO_FN_IND[nxt]
-    if fn_ind and turtle[constants.DETECT_FN[fn_ind]]() then
-        if not turtle[constants.DIG_FN[fn_ind]]() then
-            textutils.slowPrint('Failed to dig obstruction..')
-            textutils.slowPrint('Sleeping a bit and trying again')
-            os.sleep(30)
-            return true
-        end
-    end
-
-    nxt = move_state.FROM_TURTLE_ATTR[nxt]
-
-    local act = move_state[nxt]()
-    store:dispatch(act)
-    mem.current_path_ind = mem.current_path_ind + 1
-
-    -- The last index we want to skip
-    return mem.current_path_ind < #mem.current_path
+    return path_utils.tick_path(store, mem, true)
 end
 
-local function select_empty()
-    for i=1, 16 do
-        local cnt = turtle.getItemCount(i)
-        if cnt == 0 then
-            turtle.select(i)
-            return true
-        end
-    end
-    return false
-end
+local select_empty = inv.select_empty
 
 local function select_to_deposit()
     local sapling_cnt = 0
@@ -297,15 +241,7 @@ local function select_count_saplings()
     return false, 0
 end
 
-local function count_empty_slots()
-    local sm = 0
-    for i=1, 16 do
-        if turtle.getItemCount(i) == 0 then
-            sm = sm + 1
-        end
-    end
-    return sm
-end
+local count_empty_slots = inv.count_empty
 
 local function clear_mem(mem)
     if mem == nil then
@@ -373,6 +309,7 @@ local OBJECTIVE_TICKERS = {
             if not turtle[suck_fn]() then
                 textutils.slowPrint('Nothing to use as fuel available!')
                 textutils.slowPrint('Add some fuel to fuel chest and reboot/wait a minute')
+                textutils.slowPrint('Fuel chest should be me+' .. mem.current_path[#mem.current_path])
                 os.sleep(60)
                 return
             end
@@ -403,7 +340,7 @@ local OBJECTIVE_TICKERS = {
         end
     end,
     [OBJ_RESTOCK] = function(store, mem)
-        local succ, cnt = select_count_saplings()
+        local cnt = select_count_saplings()
         if not succ or cnt >= RESTOCK_SAPLINGS_AT then
             idle(store, mem)
             return
