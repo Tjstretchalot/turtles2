@@ -490,6 +490,7 @@ farm.CHECK_SUB_TICKERS = {
 
             -- set loc
             if not path_utils.set_path(store, mem, loc, cfg.world, true, true) then
+                textutils.slowPrint('having trouble finding a path')
                 os.sleep(30)
                 return
             end
@@ -515,11 +516,12 @@ farm.CHECK_SUB_TICKERS = {
                         turtle[constants.PLACE_FN[fn_ind]]()
                     end
                 end
-                if loc_ind < #farm_info.locs then
-                    store:dispatch(farm.check_farm_incr_loc_ind())
-                else
-                    store:dispatch(farm.check_farm_finish())
-                end
+            end
+
+            if loc_ind < #farm_info.locs then
+                store:dispatch(farm.check_farm_incr_loc_ind())
+            else
+                store:dispatch(farm.check_farm_finish())
             end
         end
     end
