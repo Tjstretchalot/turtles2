@@ -22,6 +22,12 @@ function home._init()
         fs.delete('home.ini')
     end
 
+    local fuel = turtle.getFuelLevel()
+    if fuel ~= 'unlimited' and fuel <= 0 then
+        textutils.slowPrint('use the refuel command before starting; need at least 2 fuel')
+        error()
+    end
+
     local just_loc, dir = gps_locate.locate()
     if just_loc then
         home._loc = {
