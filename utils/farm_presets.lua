@@ -42,4 +42,74 @@ for z=1, 9, 1 do
     _loc(4, z)
 end
 
+--- Creates a rectangular prism world which has the given vectors
+-- hollowed out
+function farm_presets.world_rect(min_corner, max_corner)
+    local res = {}
+    for x=min_corner.x, max_corner.x do
+        for y=min_corner.y, max_corner.y do
+            for z=min_corner.z, max_corner.z do
+                res[tostring(vector.new(x, y, z))] = true
+            end
+        end
+    end
+    return res
+end
+
+--- Returns a table with every vector in locs but offset the given
+-- amount.
+-- @param locs table array-like with each element as a vector
+-- @param offset vector the amount to offset elements by
+-- @return table array-like like locs with values offset
+function farm_presets.offset_values(locs, offset)
+    local res = {}
+    for k, v in ipairs(locs) do
+        res[k] = v + offset
+    end
+    return res
+end
+
+local function next_num(str, ind)
+    local end_ind = ind
+    while end_ind < #str and string.sub(str, end_ind + 1, end_ind + 1) ~= ',' do
+        end_ind = end_ind + 1
+    end
+    return end_ind, tonumber(string.sub(str, ind, end_ind))
+end
+
+local function vecstr_to_vec(str)
+    local ind, x = next_num(str, 1)
+    local y
+    ind, y = next_num(str, ind + 2)
+    local z
+    ind, z = next_num(str, ind + 2)
+    return vector.new(x, y, z)
+end
+
+--- Returns a table where every key is offset by the given amount.
+-- @param world table keys are tostring(vector) and values are true
+-- @param offset vector the amount to offset the keys by
+-- @return table a copy of world with keys offset
+function farm_presets.offset_keys(world, offset)
+    local res = {}
+    for k, v in pairs(world) do
+        local kvec = vecstr_to_vec(k)
+        res[tostring(kvec + offset)] = true
+    end
+    return res
+end
+
+--- Unions two worlds.
+-- @param worlds table a table of tables for worlds
+-- @return table a new table with all the keys from both
+function farm_presets.union(worlds)
+    local res = {}
+    for _, world in ipairs(worlds) do
+        for k, v in pairs(world) do
+            res[k] = v
+        end
+    end
+    return res
+end
+
 return farm_presets
