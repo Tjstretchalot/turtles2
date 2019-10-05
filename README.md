@@ -33,7 +33,7 @@ are disabled.
 
 - **Tree farm** - handles oak trees, allowing you to farm wood and apples. If
 the wood is burned into charcoal, this results in a significant surplus in
-fuel for turtles.
+fuel for turtles. Checks each tree once per day.
 - **Wheat farm** - a simple 9x9 wheat farm which is checked every 30 minutes,
 depositing seeds and wheat in separate chests and has a chest to get fuel from.
 - **Wheat/Carrot/Potato farm** - 3 stacked 9x9 farms all managed by a single
