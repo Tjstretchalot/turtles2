@@ -80,13 +80,13 @@ farms.
 
 ## Downloading (No FTP Access)
 
-Use the [GitHub Repository Downloader](http://www.computercraft.info/forums2/index.php?/topic/4072-github-repository-downloader/)
+Use [gitget v2](http://www.computercraft.info/forums2/index.php?/topic/17387-gitget-version-2-release/)
 to download the entire repository using the following:
 
 ```text
-pastebin get wPtGKMam github
-github tjstretchalot turtles2 ./ .
-cd turtles2/turtles2
+pastebin get W5ZkVYSi gitget
+gitget tjstretchalot turtles2 master turtles2/
+cd turtles2/
 tests/hello.lua
 ```
 
