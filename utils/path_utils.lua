@@ -70,14 +70,22 @@ end
 -- @param allow_dig boolean|nil true if we should dig unexpected obstructions,
 -- false if we should just sleep. To prevent corruptions, the path must
 -- have no back movements.
+-- @param include_last boolean|nil true if we should perform the last move,
+-- false or nil otherwise
 -- @return true if theres more to do before last move, false otherwise
-function path_utils.tick_path(store, mem, allow_dig)
+function path_utils.tick_path(store, mem, allow_dig, include_last)
     if allow_dig == nil then allow_dig = true end
+    if include_last == nil then include_last = false end
+
     if mem.current_path == nil then
         error('tick_path with no path', 2)
     end
 
-    if mem.current_path_ind >= #mem.current_path then
+    if mem.current_path_ind > #mem.current_path then
+        return false
+    end
+
+    if not include_last and mem.current_path_ind == #mem.current_path then
         return false
     end
 
@@ -103,7 +111,10 @@ function path_utils.tick_path(store, mem, allow_dig)
     store:dispatch(act)
     mem.current_path_ind = mem.current_path_ind + 1
 
-    -- The last index we want to skip
+    if include_last then
+        return mem.current_path_ind <= #mem.current_path
+    end
+
     return mem.current_path_ind < #mem.current_path
 end
 

@@ -236,6 +236,13 @@ function Store:clean_and_save()
     self:_serialize_list(self.filen .. '.list')
 end
 
+-- Deletes all store-related files. This prevents recovery
+function Store:clean()
+    self:clean_and_save()
+    fs.delete(self.filen .. '.list')
+    fs.delete(self.filen)
+end
+
 --- This can be called to save the _list to .list.recovery, delete .list,
 -- copy .list.recovery to .list, and then delete .list.recovery. This assumes
 -- we do not need to write to .list.recovery if it already exists.

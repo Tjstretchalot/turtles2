@@ -11,9 +11,10 @@
 -- Persistance:
 --   This is meant to be completely persistent; once run, it will automatically
 --   detect and handle restarts until completion.
-
 dofile('turtles2/utils/require.lua')
 
+local state = require('utils/state')
+local move_state = require('utils/move_state')
 local ores = require('utils/ores')
 local home = require('utils/home')
 local startup = require('utils/startup')
@@ -31,23 +32,6 @@ local function filter_list(items)
     end
 
     return result
-end
-
-local function init_ctx()
-    local poss = ores.OreContext.recover_possible('vein_ores_ctx')
-    if #poss == 1 then return poss[1] end
-
-    poss = ores.OreContext.recover_with_fuel(poss)
-    if #poss == 1 then return poss[1] end
-
-    if home.absolute() then
-        local hloc, hdir = home.loc()
-        poss = ores.OreContext.recover_with_gps(poss, hloc, hdir)
-        if #poss == 1 then return poss[1] end
-    end
-
-    poss = ores.OreContext.recover_with_guess(poss)
-    return poss[1]
 end
 
 local function main()
@@ -68,13 +52,40 @@ local function main()
     end
 
     local filter = filter_list(items)
-    local ctx = init_ctx()
-    ctx:clean_and_save()
-    while ctx:next(filter) do end
 
-    startup.deject('programs/vein.lua')
-    fs.delete('vein_ores_ctx')
+    local r, a, d, i = state.combine(
+        {
+            move_state=move_state.reducer,
+            ores=ores.reducer,
+        },
+        {
+            move_state=move_state.actionator,
+            ores=ores.actionator
+        },
+        {
+            move_state=move_state.discriminators,
+            ores=ores.discriminators
+        },
+        {
+            move_state=move_state.init,
+            ores=ores.init
+        }
+    )
+
+    local store = state.Store:recover('vein_store', r, a, d, i)
+    store:dispatch(move_state.update_fuel())
+    store:clean_and_save()
+
+    if not store.raw.ores.initialized then
+        store:dispatch(ores.set_start_to_cur(store))
+    end
+
+    local mem = {}
+    while ores.tick(store, mem, 'ores', filter) do end
+
+    store:clean()
     home.delete()
+    startup.deject('programs/vein.lua')
 end
 
 main()

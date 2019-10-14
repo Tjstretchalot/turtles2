@@ -178,6 +178,20 @@ local function cust_reducer(raw, action)
     return raw
 end
 
+-- Handles coupled reducing components. When setting the objective
+-- we also clear the ore state. If one occurred without the other,
+-- corruption is possible.
+local function reduce_wrapper(reducer)
+    return function(raw, action)
+        local res = reducer(raw, action)
+        if action.type == ACT_SET_OBJECTIVE then
+            res = state.deep_copy(res)
+            res.ores = ores.init()
+        end
+        return res
+    end
+end
+
 local cust_actionator = {}
 local cust_discriminators = {}
 
@@ -257,23 +271,6 @@ local function idle(store, mem)
     clear_mem(mem)
 end
 
-local function init_ctx()
-    local poss = ores.OreContext.recover_possible('treefarm_ores_ctx')
-    if #poss == 1 then return poss[1] end
-
-    poss = ores.OreContext.recover_with_fuel(poss)
-    if #poss == 1 then return poss[1] end
-
-    if home.absolute() then
-        local hloc, hdir = home.loc()
-        poss = ores.OreContext.recover_with_gps(poss, hloc, hdir)
-        if #poss == 1 then return poss[1] end
-    end
-
-    poss = ores.OreContext.recover_with_guess(poss)
-    return poss[1]
-end
-
 local function decide_check_tree(store, mem)
     for ind, inf in ipairs(store.raw.treefarm.trees) do
         if not inf.planted_day or inf.planted_day < os.day() then
@@ -340,7 +337,7 @@ local OBJECTIVE_TICKERS = {
         end
     end,
     [OBJ_RESTOCK] = function(store, mem)
-        local cnt = select_count_saplings()
+        local succ, cnt = select_count_saplings()
         if not succ or cnt >= RESTOCK_SAPLINGS_AT then
             idle(store, mem)
             return
@@ -401,16 +398,18 @@ local OBJECTIVE_TICKERS = {
         end
     end,
     [OBJ_HARVEST] = function(store, mem)
-        if not mem.ore_ctx then
-            mem.ore_ctx = init_ctx()
-            mem.ore_ctx:clean_and_save()
+        if not store.raw.ores.initialized then
+            store:dispatch(ores.set_start_to_cur(store))
         end
 
-        if not mem.ore_ctx:next(ores_filter) then
+        if mem.ore_ctx == nil then
+            mem.ore_ctx = {}
+        end
+
+        if not ores.tick(store, mem.ore_ctx, 'ores', ores_filter) then
             local ind = store.raw.treefarm.context.ind
-            store:dispatch(harvest_tree(ind))
-            mem.ore_ctx:clean()
-            idle(store, mem)
+            store:dispatch(harvest_tree(ind)) -- ok to repeat this
+            idle(store, mem) -- this uninitializes ores safely
         end
     end,
     [OBJ_IDLE] = function(store, mem)
@@ -471,21 +470,27 @@ local function main()
     local r, a, d, i = state.combine(
         {
             move_state=move_state.reducer,
+            ores=ores.reducer,
             treefarm=cust_reducer
         },
         {
             move_state=move_state.actionator,
+            ores=ores.actionator,
             treefarm=cust_actionator
         },
         {
             move_state=move_state.discriminators,
+            ores=ores.discriminators,
             treefarm=cust_discriminators
         },
         {
             move_state=move_state.init,
+            ores=ores.init,
             treefarm=cust_init
         }
     )
+
+    r = reduce_wrapper(r)
 
     local store = state.Store:recover('treefarm_store', r, a, d, i)
     home.loc() -- ensure initialized
