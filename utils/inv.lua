@@ -99,17 +99,22 @@ function inv.consume_excess(targets, cons)
     for i=1, 16 do
         local data = turtle.getItemDetail(i)
         if data ~= nil then
+            local handled = false
             for j, target in ipairs(targets) do
                 if target[0](data) then
                     if reqs[j] < data.count then
                         turtle.select(i)
-                        local exc = data.count - reqs[j]
-                        cons(exc)
+                        cons(data.count - reqs[j])
                         reqs[j] = 0
                     else
                         reqs[j] = reqs[j] - data.count
                     end
+                    handled = true
+                    break
                 end
+            end
+            if not handled then
+                cons(data.count)
             end
         end
     end

@@ -256,14 +256,14 @@ function paths.determine_path(world, world_empty, start, start_dir, end_,
         closed[cur[IND_VNDIR_STR]] = true
 
         -- forward
-        res = handle_neighbor(
+        local res = handle_neighbor(
             cur, cur[IND_VECTOR] + constants.DIR_TO_DELTA[cur[IND_DIR]], nil,
             cur[IND_DIR], 'forward'
         )
         if res then return res end
 
         -- left turn
-        local res = handle_neighbor(
+        res = handle_neighbor(
             cur, cur[IND_VECTOR], cur[IND_VECTOR_STR],
             constants.LEFT_DIRS[cur[IND_DIR]], 'turnLeft')
         if res then return res end
