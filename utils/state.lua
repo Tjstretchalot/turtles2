@@ -541,7 +541,8 @@ function state.combine(reducers, actionators, discriminators, inits)
     return reducers, actionators, discriminators, inits
 end
 
---- Deep copies the given raw state recursively.
+--- Deep copies the given raw state recursively. This is full-proof
+-- but expensive.
 -- @param st table the raw state
 -- @return table a deep copy
 function state.deep_copy(st)
@@ -550,6 +551,18 @@ function state.deep_copy(st)
     local res = {}
     for k, v in pairs(st) do
         res[k] = state.deep_copy(v)
+    end
+    return res
+end
+
+--- Shallow copies the given state, non-recursively. This is typically good
+-- enough and faster, but requires a bit more thought.
+-- @param st table the raw state
+-- @return table a shallow copy
+function state.shallow_copy(st)
+    local res = {}
+    for k, v in pairs(st) do
+        res[k] = v
     end
     return res
 end

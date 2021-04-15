@@ -65,6 +65,22 @@ function home.loc()
     return vector.new(home._loc.x, home._loc.y, home._loc.z), home._loc.dir
 end
 
+--- Replaces the home location with the fixed location. This forces it to
+-- non-absolute coordinates.
+function home.overwrite(x, y, z, dir)
+    home.delete()
+    home._loc = {
+        x = x,
+        y = y,
+        z = z,
+        dir = dir,
+        absolute = false
+    }
+    local h = fs.open('home.ini', 'w')
+    h.write(textutils.serialize(home._loc))
+    h.close()
+end
+
 --- Returns a new location which is the given absolute location and absolute
 -- direction as if it were found using relative location and relative direction.
 -- @param loc vector the location to make relative

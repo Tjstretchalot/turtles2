@@ -249,6 +249,7 @@ end
 -- @param key string the key within store.raw that gets to our raw state.
 -- @param filter function accepts the result from a successful inspect and returns
 -- true if it should be dug and false otherwise
+-- @return true if there is more to do, false otherwise
 function ores.tick(store, mem, key, filter)
     local data = store.raw[key]
 
