@@ -29,7 +29,7 @@
 --       programs/wheat.lua
 --     Ensure fuel chest is regularly refilled and wheat chest emptied
 
-dofile('turtles2/utils/require.lua')
+package.path = '../?.lua;turtles2/?.lua'
 local farm_presets = require('utils/farm_presets')
 local farm = require('utils/farm')
 local startup = require('utils/startup')

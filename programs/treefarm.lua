@@ -97,8 +97,7 @@ end
 --    context: table|nil
 -- }
 
-dofile('turtles2/utils/require.lua')
-
+package.path = '../?.lua;turtles2/?.lua'
 local ores = require('utils/ores')
 local home = require('utils/home')
 local state = require('utils/state')

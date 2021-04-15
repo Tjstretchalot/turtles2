@@ -1,5 +1,5 @@
 --- Tests the priority queue in PQue
-if not require then dofile('turtles2/utils/require.lua') end
+package.path = '../?.lua;turtles2/?.lua'
 
 local PQue = require('utils/pque')
 

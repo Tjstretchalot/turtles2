@@ -11,7 +11,11 @@ function startup._init(paths)
     startup._paths = paths
 
     for _, path in ipairs(paths) do
-        dofile('turtles2/' .. path)
+        if path:sub(-4) == '.lua' then
+            path = path:sub(1, -5)
+        end
+
+        require(path)
     end
 end
 
@@ -23,10 +27,7 @@ function startup._replace()
 
     if not fs.exists('startup') then
         local h = fs.open('startup', 'w')
-        h.writeLine("if not require then")
-        h.writeLine("  require_relative_file = 'turtles2/utils/require.lua'")
-        h.writeLine("  dofile('turtles2/utils/require.lua')")
-        h.writeLine("end")
+        h.writeLine("package.path = 'turtles2/?.lua'")
         h.writeLine("local startup = require('utils/startup')")
         h.writeLine("local h = fs.open('startup_paths.ini', 'r')")
         h.writeLine("local txt = h.readAll()")

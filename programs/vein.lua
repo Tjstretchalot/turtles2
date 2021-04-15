@@ -11,8 +11,8 @@
 -- Persistance:
 --   This is meant to be completely persistent; once run, it will automatically
 --   detect and handle restarts until completion.
-dofile('turtles2/utils/require.lua')
 
+package.path = '../?.lua;turtles2/?.lua'
 local state = require('utils/state')
 local move_state = require('utils/move_state')
 local ores = require('utils/ores')

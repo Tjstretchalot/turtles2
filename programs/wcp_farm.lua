@@ -17,7 +17,7 @@
 --     The turtle moves between farms by going up/down above the fuel chest
 
 
-dofile('turtles2/utils/require.lua')
+package.path = '../?.lua;turtles2/?.lua'
 local farm_presets = require('utils/farm_presets')
 local farm = require('utils/farm')
 local startup = require('utils/startup')

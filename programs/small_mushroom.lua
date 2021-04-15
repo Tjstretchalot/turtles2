@@ -12,7 +12,7 @@
 --   The place must be lit at light level 12 or below - i.e., 2 high ceilings, and
 --   torches are recessed into the ceiling.
 
-dofile('turtles2/utils/require.lua')
+package.path = '../?.lua;turtles2/?.lua'
 local farm_presets = require('utils/farm_presets')
 local farm = require('utils/farm')
 local startup = require('utils/startup')
