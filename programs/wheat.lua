@@ -49,7 +49,7 @@ local function main()
                 checker = function(data)
                     return (
                         data.name ~= 'minecraft:wheat'
-                        or data.metadata >= 7)
+                        or data.state.age >= 7)
                 end
             }
         },
