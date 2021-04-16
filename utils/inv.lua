@@ -91,9 +91,9 @@ end
 -- be ordered in most to least specific.
 -- @param cons function the function that consumes the excess
 function inv.consume_excess(targets, cons)
-    local reqs = {}
-    for i=1, #targets do
-        reqs[i] = targets[i][1]
+    local amt_we_want_by_target = {}
+    for i, target in ipairs(targets) do
+        amt_we_want_by_target[i] = target[2]
     end
 
     for i=1, 16 do
@@ -101,13 +101,13 @@ function inv.consume_excess(targets, cons)
         if data ~= nil then
             local handled = false
             for j, target in ipairs(targets) do
-                if target[0](data) then
-                    if reqs[j] < data.count then
+                if target[1](data) then
+                    if amt_we_want_by_target[j] < data.count then
                         turtle.select(i)
-                        cons(data.count - reqs[j])
-                        reqs[j] = 0
+                        cons(data.count - amt_we_want_by_target[j])
+                        amt_we_want_by_target[j] = 0
                     else
-                        reqs[j] = reqs[j] - data.count
+                        amt_we_want_by_target[j] = amt_we_want_by_target[j] - data.count
                     end
                     handled = true
                     break

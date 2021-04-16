@@ -124,4 +124,19 @@ constants.MOVE_TO_FN_IND = {
 constants.TIME_MORNING = 6
 constants.TIME_EVENING = 19
 
+-- The 9 inventory space indexes that make up the 3x3 crafting grid
+-- for crafty turtles
+constants.CRAFTING_SLOTS = {
+    1, 2, 3,
+    5, 6, 8,
+    10, 11, 12
+}
+
+-- The lookup dictionary for CRAFTING_SLOTS; the value is
+-- true if the key is a value in CRAFTING_SLOTS
+constants.CRAFTING_SLOT_LOOKUP = {}
+for _, v in ipairs(constants.CRAFTING_SLOTS) do
+    constants.CRAFTING_SLOT_LOOKUP[v] = true
+end
+
 return constants
