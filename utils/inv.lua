@@ -114,6 +114,7 @@ function inv.consume_excess(targets, cons)
                 end
             end
             if not handled then
+                turtle.select(i)
                 cons(data.count)
             end
         end
