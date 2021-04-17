@@ -112,7 +112,7 @@ local function init_farms(preset, settings)
         return {
             seed = seed,
             time_between_checks = 30,
-            farm_presets.offset_values(preset.farm, vector.new(0, 4 * layer, 1))
+            locs = farm_presets.offset_values(preset.farm, vector.new(0, 4 * layer, 1))
         }
     end
 
