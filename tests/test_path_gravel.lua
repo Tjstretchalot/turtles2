@@ -57,6 +57,22 @@ local function main()
     for i, ele in ipairs(mem.current_path) do
         textutils.slowPrint(string.format('%2d: %s', i, ele))
     end
+
+    textutils.slowPrint('Ticking path until completion...')
+    while path_utils.tick_path(store, mem, true, true) do
+        textutils.slowPrint('we moved')
+        textutils.slowPrint(
+            string.format('currently at %s', textutils.serialize(store.raw.move_state.position))
+        )
+        textutils.slowPrint(string.format('facing %s', store.raw.move_state.dir))
+    end
+
+    textutils.slowPrint('Finished movement')
+    textutils.slowPrint(
+        string.format('currently at %s', textutils.serialize(store.raw.move_state.position))
+    )
+    textutils.slowPrint(string.format('facing %s', store.raw.move_state.dir))
+
     store:clean()
 end
 
