@@ -8,7 +8,7 @@
 --   - The turtle will dig chunk by chunk in a square that has side-lengths
 --   of 15 chunks (300 blocks) centered around its home position.
 --   - On the x-z plane, the unmined blocks make 3x3 pillars. On the
---     y-plane, we skip 3 values at a time. We strip from layers 7-71
+--     y-plane, we skip 3 values at a time. We strip from layers 7-51
 --   - For easiest tracking, the turtle should start at north-east corner
 --     of a chunk facing south.
 --
@@ -180,7 +180,7 @@ for _, v in ipairs(WITHIN_CHUNK_BLOCKS) do
 end
 
 local Y_ORDER = {}
-for y = 7, 71, 4 do
+for y = 7, 51, 4 do
     Y_ORDER[#Y_ORDER + 1] = y
 end
 
