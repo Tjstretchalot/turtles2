@@ -45,14 +45,14 @@ local function main()
     local store = init_store()
     local mem = {}
     local rdest = vector.new(0, 0, 2)
-    local succ, path = path_utils.set_path(store, mem, rdest, WORLD, true, true)
+    local succ = path_utils.set_path(store, mem, rdest, WORLD, true, true)
     if not succ then error('failed to find path') end
-    mem.current_path = path
-    mem.current_path_ind = 1
 
     textutils.slowPrint(
         string.format('currently at %s', textutils.serialize(store.raw.move_state.position))
     )
+    textutils.slowPrint('facing %s', store.raw.move_state.dir)
+
     textutils.slowPrint('Path:')
     for i, ele in ipairs(mem.current_path) do
         textutils.slowPrint(string.format('%2d: %s', i, ele))
