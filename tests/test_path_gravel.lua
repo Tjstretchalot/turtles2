@@ -51,7 +51,7 @@ local function main()
     textutils.slowPrint(
         string.format('currently at %s', textutils.serialize(store.raw.move_state.position))
     )
-    textutils.slowPrint('facing %s', store.raw.move_state.dir)
+    textutils.slowPrint(string.format('facing %s', store.raw.move_state.dir))
 
     textutils.slowPrint('Path:')
     for i, ele in ipairs(mem.current_path) do
