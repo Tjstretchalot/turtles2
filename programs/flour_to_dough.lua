@@ -1,6 +1,7 @@
 --- This program is for the mod "The Veggie Way" which adds flour
 -- and dough as an alternative path to bread from wheat which is
--- more efficient.
+-- more efficient. This also works with a similar recipe added by
+-- Create with Wheat Dough
 --
 -- The normal way to get bread is 3 wheat -> 1 bread.
 -- The Veggie Way to get bread is 1 wheat -> 1 flour with
@@ -44,13 +45,15 @@ local FILLED_BUCKET_PRED = inv.new_pred_by_name_lookup({
 })
 
 local FLOUR_PRED = inv.new_pred_by_name_lookup({
-    ['veggie_way:flour'] = true
+    ['veggie_way:flour'] = true,
+    ['create:wheat_flour'] = true,
 })
 
 local OUTPUT_PRED = inv.new_pred_by_inv_name_lookup({
     ['minecraft:bucket'] = true,
     ['minecraft:water_bucket'] = true,
-    ['veggie_way:flour'] = true
+    ['veggie_way:flour'] = true,
+    ['create:wheat_flour'] = true,
 })
 
 local OUTPUT_TARGETS = {
@@ -124,6 +127,79 @@ end
 local function idle(store, mem)
     store:dispatch(set_objective(OBJ_IDLE, nil))
     clear_mem(mem)
+end
+
+local function try_craft_veggie_way(store, mem)
+    local firstTwoEmptySlots = {}
+    for _, i in ipairs(constants.CRAFTING_SLOTS) do
+        if turtle.getItemCount(i) == 0 then
+            table.insert(firstTwoEmptySlots, i)
+            if #firstTwoEmptySlots == 2 then break end
+        end
+    end
+
+    if #firstTwoEmptySlots ~= 2 then
+        idle(store, mem)
+        return
+    end
+
+    if not inv.select_by_pred(FLOUR_PRED) then
+        idle(store, mem)
+        return
+    end
+    if not constants.CRAFTING_SLOT_LOOKUP[turtle.getSelectedSlot()] then
+        turtle.transferTo(firstTwoEmptySlots[1])
+    end
+
+    if not inv.select_by_pred(FILLED_BUCKET_PRED) then
+        idle(store, mem)
+        return
+    end
+    if not constants.CRAFTING_SLOT_LOOKUP[turtle.getSelectedSlot()] then
+        turtle.transferTo(firstTwoEmptySlots[2])
+    end
+
+    if not turtle.craft() then
+        idle(store, mem)
+        return
+    end
+
+    clear_mem(mem)
+    store:dispatch(set_objective(OBJ_FILL_BUCKET, nil))
+end
+
+local function try_craft_create(store, mem)
+    if not inv.select_by_pred(FILLED_BUCKET_PRED) then
+        idle(store, mem)
+        return
+    end
+    turtle.transferTo(2)
+
+    local succ, data = inv.select_by_pred(FLOUR_PRED)
+
+    if not succ or data.count < 3 then
+        idle(store, mem)
+        return
+    end
+
+    local selected = turtle.getSelectedSlot()
+    if selected ~= 5 then turtle.transferTo(5, 1) end
+    if selected ~= 6 then turtle.transferTo(6, 1) end
+    if selected ~= 7 then turtle.transferTo(7, 1) end
+
+    if selected ~= 5 and selected ~= 6 and selected ~= 7 then
+        turtle.transferTo(5)
+    end
+
+    if not turtle.craft() then
+        idle(store, mem)
+        return
+    end
+
+    inv.combine_stacks()
+
+    clear_mem(mem)
+    store:dispatch(set_objective(OBJ_FILL_BUCKET, nil))
 end
 
 
@@ -201,42 +277,17 @@ local OBJECTIVE_TICKERS = {
         end
     end,
     [OBJ_CRAFT] = function(store, mem)
-        local firstTwoEmptySlots = {}
-        for _, i in ipairs(constants.CRAFTING_SLOTS) do
-            if turtle.getItemCount(i) == 0 then
-                table.insert(firstTwoEmptySlots, i)
-                if #firstTwoEmptySlots == 2 then break end
-            end
-        end
-
-        if #firstTwoEmptySlots ~= 2 then
+        local succ, data = inv.select_by_pred(FLOUR_PRED)
+        if not succ then
             idle(store, mem)
             return
         end
 
-        if not inv.select_by_pred(FLOUR_PRED) then
-            idle(store, mem)
-            return
+        if data.name == 'veggie_way:flour' then
+            try_craft_veggie_way(store, mem)
+        else
+            try_craft_create(store, mem)
         end
-        if not constants.CRAFTING_SLOT_LOOKUP[turtle.getSelectedSlot()] then
-            turtle.transferTo(firstTwoEmptySlots[1])
-        end
-
-        if not inv.select_by_pred(FILLED_BUCKET_PRED) then
-            idle(store, mem)
-            return
-        end
-        if not constants.CRAFTING_SLOT_LOOKUP[turtle.getSelectedSlot()] then
-            turtle.transferTo(firstTwoEmptySlots[2])
-        end
-
-        if not turtle.craft() then
-            idle(store, mem)
-            return
-        end
-
-        clear_mem(mem)
-        store:dispatch(set_objective(OBJ_FILL_BUCKET, nil))
     end,
     [OBJ_FILL_BUCKET] = function(store, mem)
         if mem.current_path == nil then
