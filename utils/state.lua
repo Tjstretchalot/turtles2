@@ -402,7 +402,9 @@ end
 -- there is one, then update the state of the store. Not really dispatching,
 -- but keeps the familiar name from Redux
 -- @param action the pure action table to perform. Must have a 'type' key.
-function Store:dispatch(action)
+-- @param fail_at should always be nil in production, otherwise a number
+--   1 through 8 for what failure scenario to simulate.
+function Store:dispatch(action, fail_at)
     if type(action) ~= 'table' then
         error('actions should be tables, got ' .. tostring(action))
     end
@@ -414,15 +416,23 @@ function Store:dispatch(action)
     local typ = action.type
     if self.actionators[typ] then
         Store:_serialize_action(self.filen .. '.actionating', action)
+        if fail_at == 1 then return end
         self.actionators[typ](action)
+        if fail_at == 2 then return end
         _touch(self.filen .. '.post')
+        if fail_at == 3 then return end
         self.raw = self.reducer(self.raw, action)
         self._list[#self._list + 1] = action
         self:_serialize_list(self.filen .. '.list.latest')
+        if fail_at == 4 then return end
         fs.delete(self.filen .. '.list')
+        if fail_at == 5 then return end
         fs.delete(self.filen .. '.post')
+        if fail_at == 6 then return end
         fs.copy(self.filen .. '.list.latest', self.filen .. '.list')
+        if fail_at == 7 then return end
         fs.delete(self.filen .. '.actionating')
+        if fail_at == 8 then return end
         fs.delete(self.filen .. '.list.latest')
     else
         self.raw = self.reducer(self.raw, action)
