@@ -359,7 +359,7 @@ function Store:recover(filen, reducer, actionators, discriminators, init_raw)
         store.raw = reducer(store.raw, act)
         return store
     elseif _exists and (actionator_exists or post_exists) and list_latest_exists then
-        -- 1,2|3,4|~4,5; matches 1,2,3,4,5*; 1,2,3,5; 1,2,5; 1,2,4*,5; 1,4,5
+        -- 1,2|3,4|~4,5; matches 1,2,3,4,5*; 1,2,3,5; 1,2,5; 1,2,4*,5
         -- use base + list.latest if list.latest is not corrupted, otherwise use
         -- base + list + actionator
         local list_latest = Store:_deserialize_list(filen .. '.list.latest')
@@ -390,6 +390,16 @@ function Store:recover(filen, reducer, actionators, discriminators, init_raw)
             store.raw = reducer(store.raw, v)
         end
         store._list = list_latest
+        return store
+    else if _exists and not actionator_exists and not post_exists and list_exists and list_latest_exists then
+        -- Matches 1, 4, 5
+        -- use base + list
+        local store = Store:_deserialize_with_list(
+            filen, filen .. '.list', filen, reducer, actionators, discriminators
+        )
+        if store == nil then
+            error('impossible corruption of 1 with 1,4,5')
+        end
         return store
     else
         error('strange combination: '
