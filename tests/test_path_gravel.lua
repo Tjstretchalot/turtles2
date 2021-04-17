@@ -15,9 +15,9 @@ local paths = require('utils/paths')
 local path_utils = require('utils/path_utils')
 
 local WORLD = {
-    [tostring(vector2.new(0, 0, 0))] = true,
-    [tostring(vector2.new(0, 0, 1))] = true,
-    [tostring(vector2.new(0, 0, 2))] = true
+    [tostring(vector.new(0, 0, 0))] = true,
+    [tostring(vector.new(0, 0, 1))] = true,
+    [tostring(vector.new(0, 0, 2))] = true
 }
 
 local function init_store()
