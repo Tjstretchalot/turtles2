@@ -40,7 +40,6 @@ local SAPLING_NAMES = {
 local GROWTHS = {
     ['minecraft:log'] = true,
     ['minecraft:birch_log'] = true,
-    ['minecraft:birch_leaves'] = true,
     ['minecraft:log2'] = true,
     ['IC2:blockRubWood'] = true,
     ['IC2:blockRubLeaves'] = true,
