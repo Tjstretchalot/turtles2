@@ -32,11 +32,11 @@ local function print_comparison(nm, a, b)
     print(string.format('%4s%4s | %8s | %s', err_flag, nm, a, b))
 end
 
-local store_matches_pos_dir(store, pos, dir)
+local function store_matches_pos_dir(store, pos, dir)
     return store.raw.move_state.position.x == pos.x and store.raw.move_state.position.y == pos.y and store.raw.move_state.position.z == pos.z and store.raw.move_state.dir == dir
 end
 
-local print_store_comparison_pos_dir(store, pos, dir)
+local function print_store_comparison_pos_dir(store, pos, dir)
     print('    | expected | actual')
     print_comparison(pos.x, store.raw.move_state.position.x)
     print_comparison(pos.y, store.raw.move_state.position.y)
