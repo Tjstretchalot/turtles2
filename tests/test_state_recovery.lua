@@ -62,6 +62,12 @@ local function test_fail(action, fail_at, expected_pos, expected_dir)
 end
 
 local function test_fails(forward_action, reverse_action)
+    print('Starting test for action:')
+    print(textutils.serialize(forward_action))
+
+    print('With reverse action:')
+    print(textutils.serialize(reverse_action))
+
     local store = init_store()
 
     local og_pos = state.shallow_copy(store.raw.move_state.position)
