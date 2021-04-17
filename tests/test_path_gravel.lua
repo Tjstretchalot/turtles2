@@ -5,6 +5,7 @@
 -- Setup:
 -- - Place turtle
 -- - In front of the turtle put a gravel column 3 high
+package.path = '../?.lua;turtles2/?.lua'
 
 local home = require('utils/home')
 local state = require('utils/state')
