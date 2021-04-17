@@ -1,13 +1,16 @@
 --- This program is for the mod "The Veggie Way" which adds flour
 -- and dough as an alternative path to bread from wheat which is
 -- more efficient. This also works with a similar recipe added by
--- Create with Wheat Dough
+-- Create with Wheat -> Wheat Dough
 --
 -- The normal way to get bread is 3 wheat -> 1 bread.
 -- The Veggie Way to get bread is 1 wheat -> 1 flour with
 -- a Mill, then 1 flour -> 1 dough using a bucket, then
 -- 1 dough -> 1 bread. The flour -> dough step is tedious and
 -- this automates it using a turtle!
+-- Create way to get bread is 3 wheat -> 3 wheat dough using
+-- a bucket, then 1 wheat dough -> 1 bread. The wheat -> wheat
+-- dough step is tedious and this automates it using a turtle!
 --
 -- Setup:
 
@@ -173,7 +176,7 @@ local function try_craft_create(store, mem)
         idle(store, mem)
         return
     end
-    turtle.transferTo(2)
+    turtle.transferTo(10)
 
     local succ, data = inv.select_by_pred(FLOUR_PRED)
 
