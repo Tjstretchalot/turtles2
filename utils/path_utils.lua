@@ -100,7 +100,7 @@ function path_utils.tick_path(store, mem, allow_dig, include_last)
         end
 
         -- while loop to handle gravel/sand/physics blocks
-        while turtle[constants.DETECT_FN[fn_ind]]() then
+        while turtle[constants.DETECT_FN[fn_ind]]() do
             if not turtle[constants.DIG_FN[fn_ind]]() then
                 textutils.slowPrint('Failed to dig obstruction..')
                 textutils.slowPrint('Sleeping a bit and trying again')
