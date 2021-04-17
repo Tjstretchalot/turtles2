@@ -391,7 +391,7 @@ function Store:recover(filen, reducer, actionators, discriminators, init_raw)
         end
         store._list = list_latest
         return store
-    else if _exists and not actionator_exists and not post_exists and list_exists and list_latest_exists then
+    elseif _exists and not actionator_exists and not post_exists and list_exists and list_latest_exists then
         -- Matches 1, 4, 5
         -- use base + list
         local store = Store:_deserialize_with_list(
