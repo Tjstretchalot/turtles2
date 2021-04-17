@@ -367,7 +367,7 @@ local OBJECTIVE_TICKERS = {
             local fn_ind = constants.MOVE_TO_FN_IND[
                 mem.current_path[#mem.current_path]]
             local inspect_fn = constants.INSPECT_FN[fn_ind]
-            select_count_saplings(go bac)
+            select_count_saplings()
             local succ, data = turtle[inspect_fn]()
             if succ then
                 if SAPLING_NAMES[data.name] then
