@@ -60,7 +60,7 @@ local function load_settings()
     return settings
 end
 
-local function init_seeds(settings)
+local function init_seeds(preset, settings)
     local function init_wheat()
         return {
             has_seed = true,
@@ -107,7 +107,7 @@ local function init_seeds(settings)
     }
 end
 
-local function init_farms(settings)
+local function init_farms(preset, settings)
     local function init_farm(seed, layer)
         return {
             seed = seed,
@@ -126,7 +126,7 @@ local function init_farms(settings)
     return res
 end
 
-local function init_world(settings)
+local function init_world(preset, settings)
     local arr = {}
     for layer=1, settings.count * 3 do
         local y = (layer-1) * 4
@@ -162,8 +162,8 @@ local function main()
     local settings = load_settings()
 
     farm.main(
-        init_seeds(settings),
-        init_farms(settings),
+        init_seeds(preset, settings),
+        init_farms(preset, settings),
         { -- specific chests
             { -- seeds
                 pred = inv.new_pred_by_name('minecraft:wheat_seeds'),
@@ -184,7 +184,7 @@ local function main()
         },
         vector.new(0, -1, 0), -- fuel chest
         vector.new(0, -1, -2), -- excess chest
-        init_world(settings)
+        init_world(preset, settings)
     )
 end
 
