@@ -104,8 +104,23 @@ local function test_fails(forward_action, reverse_action)
 end
 
 local function main()
+    print('Testing turn left failures..')
+    test_fails(move_state.turn_left(), move_state.turn_right())
+
     print('Testing move forward failures..')
     test_fails(move_state.forward(), move_state.back())
+
+    print('Testing move back failures..')
+    test_fails(move_state.back(), move_state.forward())
+
+    print('Testing move up failures..')
+    test_fails(move_state.up(), move_state.down())
+
+    print('Testing move down failures..')
+    test_fails(move_state.down(), move_state.up())
+
+    print('Testing turn right failures..')
+    test_fails(move_state.turn_right(), move_state.turn_left())
 end
 
 main()
