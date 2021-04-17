@@ -44,11 +44,12 @@ local function main()
 
     local store = init_store()
     local mem = {}
+    local rdest = vector.new(0, 0, 2)
     mem.current_path = path_utils.set_path(store, mem, rdest, WORLD, true, true)
     mem.current_path_ind = 1
 
     textutils.slowPrint(
-        string.format('currently at %s', store.raw.move_state.position)
+        string.format('currently at %s', textutils.serialize(store.raw.move_state.position))
     )
     textutils.slowPrint('Path:')
     for i, ele in ipairs(mem.current_path) do
