@@ -47,7 +47,7 @@ end
 local function test_fail(action, fail_at, expected_pos, expected_dir)
     local store = init_store()
     store:clean_and_save()
-    store:dispatch(action, fail_at)
+    store:dispatch(state.deep_copy(action), fail_at)
 
     store = init_store()
     store:clean_and_save()
@@ -73,11 +73,11 @@ local function test_fails(forward_action, reverse_action)
     local og_pos = state.shallow_copy(store.raw.move_state.position)
     local og_dir = store.raw.move_state.dir
 
-    store:dispatch(forward_action)
+    store:dispatch(state.deep_copy(forward_action))
     local succ_pos = state.shallow_copy(store.raw.move_state.position)
     local succ_dir = store.raw.move_state.dir
 
-    store:dispatch(reverse_action)
+    store:dispatch(state.deep_copy(reverse_action))
     if not store_matches_pos_dir(store, og_pos, og_dir) then
         print('forward action is not reversed by reverse action:')
         print_store_comparison_pos_dir(store, og_pos, og_dir)
@@ -89,7 +89,7 @@ local function test_fails(forward_action, reverse_action)
     for i=2, 8 do
         print(string.format('Testing fail_at=%d...', i))
         test_fail(forward_action, 2, succ_pos, succ_dir)
-        store:dispatch(reverse_action)
+        store:dispatch(state.deep_copy(reverse_action))
 
         if not store_matches_pos_dir(store, og_pos, og_dir) then
             print('forward action is not reversed by reverse action:')
