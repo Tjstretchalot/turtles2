@@ -29,6 +29,7 @@ local farm_presets = require('utils/farm_presets')
 local farm = require('utils/farm')
 local startup = require('utils/startup')
 local inv = require('utils/inv')
+local state = require('utils/state')
 
 local DEFAULT_SETTINGS = {
     count = 1,
