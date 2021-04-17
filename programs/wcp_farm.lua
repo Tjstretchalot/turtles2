@@ -120,7 +120,7 @@ local function init_farms(preset, settings)
     local res = {}
     for i = 1, settings.count do
         for j = 1, nseeds do
-            res.append(init_farm(j, (i - 1) * nseeds + j - 1))
+            table.insert(res, init_farm(j, (i - 1) * nseeds + j - 1))
         end
     end
     return res
