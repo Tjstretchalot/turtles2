@@ -37,11 +37,11 @@ local function store_matches_pos_dir(store, pos, dir)
 end
 
 local function print_store_comparison_pos_dir(store, pos, dir)
-    print('    | expected | actual')
-    print_comparison(pos.x, store.raw.move_state.position.x)
-    print_comparison(pos.y, store.raw.move_state.position.y)
-    print_comparison(pos.z, store.raw.move_state.position.z)
-    print_comparison(dir, store.raw.move_state.dir)
+    print(string.format('%8s | expected | actual', ''))
+    print_comparison('x', pos.x, store.raw.move_state.position.x)
+    print_comparison('y', pos.y, store.raw.move_state.position.y)
+    print_comparison('z', pos.z, store.raw.move_state.position.z)
+    print_comparison('dir', dir, store.raw.move_state.dir)
 end
 
 local function test_fail(action, fail_at, expected_pos, expected_dir)
@@ -88,7 +88,10 @@ local function test_fails(forward_action, reverse_action)
     test_fail(forward_action, 1, og_pos, og_dir)
     for i=2, 8 do
         print(string.format('Testing fail_at=%d...', i))
-        test_fail(forward_action, 2, succ_pos, succ_dir)
+        test_fail(forward_action, i, succ_pos, succ_dir)
+
+        store = init_store()
+        store:clean_and_save()
         store:dispatch(state.deep_copy(reverse_action))
 
         if not store_matches_pos_dir(store, og_pos, og_dir) then
