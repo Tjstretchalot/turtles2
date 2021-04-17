@@ -94,6 +94,7 @@ local RESOURCE_NAMES_LOOKUP = {
     ['bloodmagic:ironfragment'] = true,
     ['bloodmagic:goldfragment'] = true,
     ['create:zinc_ore'] = true,
+    ['create:copper_ore'] = true,
     ['druidcraft:amber_ore'] = true,
     ['druidcraft:moonstone_ore'] = true,
     ['druidcraft:fiery_glass_ore'] = true,
