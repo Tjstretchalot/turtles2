@@ -46,14 +46,14 @@ local FILLED_BUCKET_PRED = inv.new_pred_by_name_lookup({
 
 local FLOUR_PRED = inv.new_pred_by_name_lookup({
     ['veggie_way:flour'] = true,
-    ['create:wheat_flour'] = true,
+    ['minecraft:wheat'] = true,
 })
 
 local OUTPUT_PRED = inv.new_pred_by_inv_name_lookup({
     ['minecraft:bucket'] = true,
     ['minecraft:water_bucket'] = true,
     ['veggie_way:flour'] = true,
-    ['create:wheat_flour'] = true,
+    ['minecraft:wheat'] = true,
 })
 
 local OUTPUT_TARGETS = {
