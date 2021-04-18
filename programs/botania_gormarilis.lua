@@ -100,8 +100,8 @@ local function desired_food_for_plant(store, mem, plant_index)
     for i = 1, #FOOD_ITEMS do
         current_item = (current_item % #FOOD_ITEMS) + 1
         if current_item == last_fed then return nil end
-        if inv.select_by_pred(FOOD_ITEMS[i]) then
-            return i
+        if inv.select_by_pred(FOOD_ITEMS[current_item]) then
+            return current_item
         end
     end
     return nil
@@ -150,7 +150,6 @@ local OBJECTIVE_TICKERS = {
                 mem.current_path[#mem.current_path]]
             local drop_fn = constants.DROP_FN[fn_ind]
             turtle[drop_fn](1)
-            textutils.slowPrint(string.format('fed a %d to %d', food_index, plant_index))
             store.raw.gorm.next_feed_index = (plant_index % #FLOWER_LOCS) + 1
             store.raw.gorm.last_food_index_by_plant_index[plant_index] = food_index
             os.sleep(2.5 / #FLOWER_LOCS)
