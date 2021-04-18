@@ -150,6 +150,7 @@ local OBJECTIVE_TICKERS = {
             local drop_fn = constants.DROP_FN[fn_ind]
             turtle[drop_fn](1)
             store.raw.gorm.next_feed_index = (plant_index % #FLOWER_LOCS) + 1
+            clear_mem(mem)
         end
     end
 }
