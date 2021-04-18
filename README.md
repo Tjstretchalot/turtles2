@@ -3,6 +3,10 @@
 Contains a collection of functions and classes that make working with turtles
 easier, and runners which use those functions.
 
+## Support
+
+This modpack has been tested on CC: Tweaked and CC: Restitched Updated. However,
+the software is provided as-is without any warranty. See LICENSE.md for more details.
 ## User Features
 
 - Restart-friendly: all programs provided can handle restarts at any time,
@@ -37,10 +41,21 @@ fuel for turtles. Checks each tree once per day.
 - **Wheat farm** - a simple 9x9 wheat farm which is checked every 30 minutes,
 depositing seeds and wheat in separate chests and has a chest to get fuel from.
 - **Wheat/Carrot/Potato farm** - 3 stacked 9x9 farms all managed by a single
-turtle. Each farm is on its own 30 minute timer for being checked.
-- **Small mushroom farm** - Easily farm an 18x18 small mushroom farm with any
+turtle. Each farm is on its own 30 minute timer for being checked. Has a simple
+config file to include additional 9x9 farms stacked on top of each other, following
+the same pattern of wheat, carrot, then potatoes. Seems to work best at 9 farms total
+(so 3 of each).
+- **Small mushroom farm** - easily farm an 18x18 small mushroom farm with any
 distribution of red and brown mushrooms. 36 planted mushrooms, checked every
 hour.
+- **Mining** - with very little setup, mine all resources between layers 7 and 50
+in a chunk, spiraling chunk by chunk outward.
+- **Vein** - quickly set the turtle up to mine out all of a given resource which is
+contiguous next to the turtle. Often useful for deconstructing large structures or
+acquiring obsidian.
+
+Plus other more specific programs (e.g., automations for feeding the Gourmaryllis
+plant in Botania, or the crafting recipe for wheat dough in Create).
 
 ## Technical Features
 
@@ -49,8 +64,6 @@ projects, such as massive farms, complex mining techniques, construction
 projects, or multi-turtle programs. These things are impossible without a way
 to handle restarts, and painful without pathfinding.
 
-- A "require" polyfill is included, which makes working with multiple files
-seamless. This is perhaps the most irritating thing about pure turtles.
 - Redux-style stores: with a little change from how you're used to working with
 turtles, you too can get restart-friendly programs. Essentially, you maintain
 two tables, one of which is guarranteed to be persistent through restarts and
