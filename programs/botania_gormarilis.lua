@@ -129,6 +129,7 @@ local OBJECTIVE_TICKERS = {
             local fn_ind = constants.MOVE_TO_FN_IND[
                 mem.current_path[#mem.current_path]]
             local suck_fn = constants.SUCK_FN[fn_ind]
+            inv.select_empty()
             store.raw.gorm.next_food_chest_index = (food_chest_index % #FOOD_CHEST_LOCS) + 1
             if not turtle[suck_fn]() then
                 textutils.slowPrint('add varied food')
@@ -140,6 +141,10 @@ local OBJECTIVE_TICKERS = {
                 store:dispatch(set_objective(OBJ_DROP_FOOD, nil))
                 clear_mem(mem)
                 return
+            end
+            if inv.count_empty() < 14 then
+                local drop_fn = constants.DROP_FN[fn_ind]
+                turtle[drop_fn]()
             end
         end
     end,
