@@ -23,6 +23,9 @@ local OBJ_DROP_FOOD = 'drop'
 local ACT_SET_OBJECTIVE = 'set_objective'
 
 -- Locations
+local WORLD = {
+    [tostring(vector.new(0, 0, 0))] = true
+}
 local FOOD_CHEST_LOC = vector.new(0, 0, 1)
 local FLOWER_LOCS = {vector.new(1, 0, 0), vector.new(-1, 0, 0)}
 local FOOD_ITEMS = {
@@ -66,6 +69,8 @@ end
 
 local cust_actionator = {}
 local cust_discriminators = {}
+
+
 
 local function set_path(store, mem, rdest)
     return path_utils.set_path(store, mem, rdest, WORLD, true, true)
