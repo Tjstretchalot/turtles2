@@ -86,8 +86,8 @@ _row(-1, false, true)
 _row(0, false, false)
 _row(1, true, true)
 _row(2, false, false)
-row(3, false, false)
-row(4, false, true)
+_row(3, false, false)
+_row(4, false, true)
 
 --- Creates a rectangular prism world which has the given vectors
 -- hollowed out
