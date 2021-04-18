@@ -23,6 +23,7 @@ local OBJ_DROP_FOOD = 'drop'
 -- Actions
 local ACT_SET_OBJECTIVE = 'set_objective'
 local ACT_INCREMENT_FOOD_CHEST_INDEX = 'increment_next_food_chest_index'
+local ACT_FED_PLANT = 'fed_plant'
 
 -- Locations
 local WORLD = {
@@ -57,6 +58,13 @@ local function increment_next_food_chest_index()
     }
 end
 
+local function fed_plant(food_index)
+    return {
+        type = ACT_FED_PLANT,
+        food_index = food_index
+    }
+end
+
 local function cust_init()
     local raw = {}
     raw.objective = 'idle'
@@ -76,6 +84,11 @@ local function cust_reducer(raw, action)
     elseif action.type == ACT_INCREMENT_FOOD_CHEST_INDEX then
         raw = state.deep_copy(raw)
         raw.next_food_chest_index = (raw.next_food_chest_index % #FOOD_CHEST_LOCS) + 1
+        return raw
+    elseif action.type == ACT_FED_PLANT then
+        raw = state.deep_copy(raw)
+        raw.next_feed_index = (raw.next_feed_index % #FLOWER_LOCS) + 1
+        raw.last_food_index_by_plant_index[plant_index] = action.food_index
         return raw
     end
     return raw
@@ -178,8 +191,7 @@ local OBJECTIVE_TICKERS = {
                 mem.current_path[#mem.current_path]]
             local drop_fn = constants.DROP_FN[fn_ind]
             turtle[drop_fn](1)
-            store.raw.gorm.next_feed_index = (plant_index % #FLOWER_LOCS) + 1
-            store.raw.gorm.last_food_index_by_plant_index[plant_index] = food_index
+            store:dispatch(fed_plant(food_index))
             os.sleep(2.5 / #FLOWER_LOCS)
             clear_mem(mem)
         end
