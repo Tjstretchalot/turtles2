@@ -54,12 +54,12 @@ local FARM_TYPE_TO_SEED_INDEX = {
 }
 
 local PRESETS_BY_SEED_INDEX = {
-    wheat = farm_presets.SIMPLE,
-    carrot = farm_presets.SIMPLE,
-    potato = farm_presets.SIMPLE,
-    pumpkin = farm_presets.MELON_LIKE,
-    melon = farm_presets.MELON_LIKE,
-    beetroot = farm_presets.SIMPLE,
+    farm_presets.SIMPLE,
+    farm_presets.SIMPLE,
+    farm_presets.SIMPLE,
+    farm_presets.MELON_LIKE,
+    farm_presets.MELON_LIKE,
+    farm_presets.SIMPLE,
 }
 
 local DEFAULT_SETTINGS = {
