@@ -87,6 +87,7 @@ local function cust_reducer(raw, action)
         return raw
     elseif action.type == ACT_FED_PLANT then
         raw = state.deep_copy(raw)
+        local plant_index = raw.next_feed_index
         raw.next_feed_index = (raw.next_feed_index % #FLOWER_LOCS) + 1
         raw.last_food_index_by_plant_index[plant_index] = action.food_index
         return raw
