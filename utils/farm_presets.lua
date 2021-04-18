@@ -67,13 +67,13 @@ local function _loc(x, z, dig_here)
 end
 
 -- the order for the farm part is important
-for x=-4, 2, 4 do
+for x=-4, 0, 4 do
     for z=1, 9, 1 do
         _loc(x, z, true)
         _loc(x + 1, z, false)
     end
     for z=9, 1, -1 do
-        _loc(x + 2, z)
+        _loc(x + 2, z, true)
         _loc(x + 3, z, false)
     end
 end
