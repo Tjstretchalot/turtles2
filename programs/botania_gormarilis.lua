@@ -37,7 +37,8 @@ local FOOD_ITEMS = {
     }),
     inv.new_pred_by_name_lookup({
         ['minecraft:carrot'] = true,
-    })
+    }),
+    inv.new_pred_by_name('minecraft:mushroom_stew')
 }
 
 local function set_objective(obj, ctx)
