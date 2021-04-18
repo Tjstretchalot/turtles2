@@ -1,4 +1,8 @@
---- Wheat carrot potato farm, 3 vertical 9x9s.
+--- Vertical 9x9 farms. Note that this will not automatically plant melon
+-- or pumpkin layers. They should be planted in alternating columns (i.e,
+-- in the same direction and location as the turtle starts, 3 to the right
+-- is the first column, then 2 left is the next column, etc).
+--
 -- Farm layout:
 --     Below the turtle is the fuel chest.
 --     Look in the same direction as the turtle
@@ -7,21 +11,30 @@
 --     Two blocks behind fuel chest is the excess chest.
 --     Two blocks left of excess chest is the carrot chest
 --     Two blocks right of excess chest is the potato chest
+--     Two blocks behind the excess chest is the beetroot seeds chest
+--     Two blocks left of the beetroot seeds chest is the melon chest
+--     Two blocks right of the beetroot seeds chest is the pumpkin chest
+--     Two blocks right of the pumpkin chest is the beetroot chest
 --     In front of the fuel chest is a torch.
 --     1 in front, then 1 below, the torch is the bottom center
---     of a 9x9 wheat farm, lit the same was as programs/wheat. the
+--     of a 9x9 tilled farm, lit the same was as programs/wheat. the
 --     empty space in the farm (counting seeds as empty) is 3 tall,
---     the ceiling forms a 9x9 for the carrot farm.
---     Same deal, 3 empty height (including seed) for carrot farm, above it is
---     the potato farm
+--     the ceiling forms a 9x9 for another farm.
+--     Same deal, 3 empty height, above it another farm. This may be
+--     repeated any number of times.
 --     The turtle moves between farms by going up/down above the fuel chest
 --
 -- This will generate "farm.config", which will have the following configuration
 -- options (textutils.serialize style):
--- - count [number] (default 1): Must be a positive integer. If higher than one,
---   then this assumes theres that many wheat, carrot, and potato farms. FOr example,
---   if count is 2, then there are 6 9x9 farms (wheat, carrot, potato, wheat, carrot,
---   potato). Does not change the chest layout.
+-- - layers [array(string)] (default {"wheat","carrot","potato"}). Describes the
+--   type of farm for each layer, starting from the bottom of the farm and moving
+--   upward. Valid values are:
+--   + wheat
+--   + carrot
+--   + potato
+--   + pumpkin : Plant Manually (see top)
+--   + melon   : Plant Manually (see top)
+--   + beetroot
 
 
 package.path = '../?.lua;turtles2/?.lua'
@@ -31,15 +44,25 @@ local startup = require('utils/startup')
 local inv = require('utils/inv')
 local state = require('utils/state')
 
+local FARM_TYPE_TO_SEED_INDEX = {
+    wheat = 1,
+    carrot = 2,
+    potato = 3,
+    pumpkin = 4,
+    melon = 5,
+    beetroot = 6
+}
+
 local DEFAULT_SETTINGS = {
-    count = 1,
+    layers = { 'wheat', 'carrot', 'potato' }
 }
 
 local function load_settings()
     local filename = 'farm.config'
     local settings = state.deep_copy(DEFAULT_SETTINGS)
 
-    if fs.exists(filename) then
+    local need_initialize = not fs.exists(filename)
+    if not need_initialize then
         local h = fs.open(filename, 'r')
         local txt = h.readAll()
         h.close()
@@ -56,6 +79,12 @@ local function load_settings()
     local h = fs.open(filename, 'w')
     h.write(textutils.serialize(settings))
     h.close()
+
+    if need_initialize then
+        textutils.slowPrint('initialized config to farm.config')
+        error('check config')
+        return
+    end
 
     return settings
 end
@@ -100,10 +129,39 @@ local function init_seeds(preset, settings)
         }
     end
 
+    local function init_pumpkin()
+        return {
+            has_seed = false,
+            checker = function(data)
+                return true
+            end
+        }
+    end
+
+    local function init_melon()
+        return init_pumpkin()
+    end
+
+    local function init_beetroot()
+        return {
+            has_seed = true,
+            chest = vector.new(0, -1, -4),
+            pred = inv.new_pred_by_name('minecraft:beetroot_seeds'),
+            checker = function(data)
+                return (
+                    data.name ~= 'minecraft:beetroots'
+                    or data.state.age >= 3)
+            end
+        }
+    end
+
     return {
         init_wheat(),
         init_carrots(),
-        init_potatoes()
+        init_potatoes(),
+        init_pumpkin(),
+        init_melon(),
+        init_beetroot(),
     }
 end
 
@@ -116,19 +174,22 @@ local function init_farms(preset, settings)
         }
     end
 
-    local nseeds = 3
     local res = {}
-    for i = 1, settings.count do
-        for j = 1, nseeds do
-            table.insert(res, init_farm(j, (i - 1) * nseeds + j - 1))
+    for layer_index, farm_type in ipairs(settings.layers) do
+        local seed_index = FARM_TYPE_TO_SEED_INDEX[farm_type]
+        if not seed_index then
+            textutils.slowPrint(string.format('invalid farm type: %s', farm_type))
+            error('invalid farm type')
         end
+
+        table.insert(res, init_farm(seed_index, layer_index))
     end
     return res
 end
 
 local function init_world(preset, settings)
     local arr = {}
-    for layer=1, settings.count * 3 do
+    for layer=1, #settings.layers do
         local y = (layer-1) * 4
         table.insert(arr, farm_presets.world_rect(
             vector.new(-4, y, 2),
@@ -140,7 +201,7 @@ local function init_world(preset, settings)
     end
     table.insert(
         arr, farm_presets.world_rect( -- chests
-            vector.new(-2, 0, -2),
+            vector.new(-2, 0, -4),
             vector.new(2, 0, 0)
         )
     )
@@ -148,7 +209,7 @@ local function init_world(preset, settings)
         arr,
         farm_presets.world_rect( -- connection
             vector.new(0, 0, 0),
-            vector.new(0, ((settings.count * 3) - 1) * 4, 0)
+            vector.new(0, (#settings.layers - 1) * 4, 0)
         )
     )
 
@@ -156,7 +217,7 @@ local function init_world(preset, settings)
 end
 
 local function main()
-    startup.inject('programs/wcp_farm.lua')
+    startup.inject('programs/farm.lua')
 
     local preset = farm_presets.SIMPLE
     local settings = load_settings()

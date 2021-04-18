@@ -36,23 +36,23 @@ are disabled.
 ## Provided Programs
 
 - **Tree farm** - handles oak trees, allowing you to farm wood and apples. If
-the wood is burned into charcoal, this results in a significant surplus in
-fuel for turtles. Checks each tree once per day.
+  the wood is burned into charcoal, this results in a significant surplus in
+  fuel for turtles. Checks each tree once per day.
 - **Wheat farm** - a simple 9x9 wheat farm which is checked every 30 minutes,
-depositing seeds and wheat in separate chests and has a chest to get fuel from.
-- **Wheat/Carrot/Potato farm** - 3 stacked 9x9 farms all managed by a single
-turtle. Each farm is on its own 30 minute timer for being checked. Has a simple
-config file to include additional 9x9 farms stacked on top of each other, following
-the same pattern of wheat, carrot, then potatoes. Seems to work best at 9 farms total
-(so 3 of each).
+  depositing seeds and wheat in separate chests and has a chest to get fuel
+  from.
+- **Generic farm** - Stacked 9x9 farms all managed by a single turtle. Each farm
+  is on its own 30 minute timer for being checked. Has a simple config file to
+  specify the seed on each layer. Supports wheat, carrots, potatoes, melons,
+  pumpkins, and beetroot. Works optimally at 9 or 10 stacked farms.
 - **Small mushroom farm** - easily farm an 18x18 small mushroom farm with any
-distribution of red and brown mushrooms. 36 planted mushrooms, checked every
-hour.
-- **Mining** - with very little setup, mine all resources between layers 7 and 50
-in a chunk, spiraling chunk by chunk outward.
-- **Vein** - quickly set the turtle up to mine out all of a given resource which is
-contiguous next to the turtle. Often useful for deconstructing large structures or
-acquiring obsidian.
+  distribution of red and brown mushrooms. 36 planted mushrooms, checked every
+  hour.
+- **Mining** - with very little setup, mine all resources between layers 7 and
+  50 in a chunk, spiraling chunk by chunk outward.
+- **Vein** - quickly set the turtle up to mine out all of a given resource which
+  is contiguous next to the turtle. Often useful for deconstructing large
+  structures or acquiring obsidian.
 
 Plus other more specific programs (e.g., automations for feeding the Gourmaryllis
 plant in Botania, or the crafting recipe for wheat dough in Create).

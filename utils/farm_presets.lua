@@ -42,6 +42,45 @@ for z=1, 9, 1 do
     _loc(4, z)
 end
 
+--- A 9x9 setup like SIMPLE, except only does alternating columns
+-- starting at the edges. This is intended for melon/pumpkin style
+-- farms.  Use "has_seed = false" and an always-true checker, and
+-- have the seeds planted manually.
+farm_presets.MELON_LIKE = {
+    fuel_chest = farm_presets.SIMPLE.fuel_chest,
+    excess_chest = farm_presets.SIMPLE.excess_chest
+    world = { -- we fill in 9x9 below programatically
+        [tostring(vector.new(0, 0, 0))] = true,
+        [tostring(vector.new(-2, 0, 0))] = true,
+        [tostring(vector.new(2, 0, 0))] = true
+    },
+    farm = {}
+}
+
+local function _loc(x, z, dig_here)
+    farm_presets.MELON_LIKE.world[tostring(vector.new(x, 0, z))] = true
+
+    if dig_here then
+        farm_presets.MELON_LIKE.farm[
+            #farm_presets.MELON_LIKE.farm + 1] = vector.new(x, -1, z)
+    end
+end
+
+-- the order for the farm part is important
+for x=-4, 2, 4 do
+    for z=1, 9, 1 do
+        _loc(x, z, true)
+        _loc(x + 1, z, false)
+    end
+    for z=9, 1, -1 do
+        _loc(x + 2, z)
+        _loc(x + 3, z, false)
+    end
+end
+for z=1, 9, 1 do
+    _loc(4, z, true)
+end
+
 --- Creates a rectangular prism world which has the given vectors
 -- hollowed out
 function farm_presets.world_rect(min_corner, max_corner)
