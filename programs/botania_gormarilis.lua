@@ -150,6 +150,7 @@ local OBJECTIVE_TICKERS = {
                 mem.current_path[#mem.current_path]]
             local drop_fn = constants.DROP_FN[fn_ind]
             turtle[drop_fn](1)
+            textutils.slowPrint(string.format('fed a %d', food_index))
             store.raw.gorm.next_feed_index = (plant_index % #FLOWER_LOCS) + 1
             store.raw.gorm.last_food_index_by_plant_index[plant_index] = food_index
             os.sleep(2.5 / #FLOWER_LOCS)
