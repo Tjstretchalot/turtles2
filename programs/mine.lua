@@ -119,6 +119,8 @@ local RESOURCE_NAMES_LOOKUP = {
     ['powah:uraninite_ore'] = true,
     ['powah:uraninite_ore_dense'] = true,
     ['quark:biotite_ore'] = true,
+    ['quark:marble'] = true,
+    ['astralsorcery:marble_raw'] = true,
 }
 
 -- Initially assume an empty column at the home
