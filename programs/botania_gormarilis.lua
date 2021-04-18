@@ -22,6 +22,7 @@ local OBJ_DROP_FOOD = 'drop'
 
 -- Actions
 local ACT_SET_OBJECTIVE = 'set_objective'
+local ACT_INCREMENT_FOOD_CHEST_INDEX = 'increment_next_food_chest_index'
 
 -- Locations
 local WORLD = {
@@ -50,6 +51,12 @@ local function set_objective(obj, ctx)
     }
 end
 
+local function increment_next_food_chest_index()
+    return {
+        type = ACT_INCREMENT_FOOD_CHEST_INDEX
+    }
+end
+
 local function cust_init()
     local raw = {}
     raw.objective = 'idle'
@@ -65,6 +72,10 @@ local function cust_reducer(raw, action)
         raw = state.deep_copy(raw)
         raw.objective = state.deep_copy(action.objective)
         raw.context = state.deep_copy(action.context)
+        return raw
+    elseif action.type == ACT_INCREMENT_FOOD_CHEST_INDEX then
+        raw = state.deep_copy(raw)
+        raw.next_food_chest_index = (raw.next_food_chest_index % #FOOD_CHEST_LOCS) + 1
         return raw
     end
     return raw
@@ -130,11 +141,13 @@ local OBJECTIVE_TICKERS = {
                 mem.current_path[#mem.current_path]]
             local suck_fn = constants.SUCK_FN[fn_ind]
             if not inv.select_empty() then
-                turtle[constants.DROP_FN[fn_ind]]()
+                if not turtle[constants.DROP_FN[fn_ind]]() then
+                    os.sleep(1)
+                end
                 inv.select_empty()
             end
 
-            store.raw.gorm.next_food_chest_index = (food_chest_index % #FOOD_CHEST_LOCS) + 1
+            store:dispatch(increment_next_food_chest_index())
             if not turtle[suck_fn]() then
                 textutils.slowPrint('add varied food')
                 clear_mem(mem)
