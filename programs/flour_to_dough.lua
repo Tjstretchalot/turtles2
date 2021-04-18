@@ -240,7 +240,7 @@ local OBJECTIVE_TICKERS = {
         end
 
         -- we must have a filled bucket
-        if flour > 0 then
+        if flour > 2 then
             store:dispatch(set_objective(OBJ_CRAFT))
             return
         end
