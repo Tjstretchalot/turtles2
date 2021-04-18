@@ -53,6 +53,15 @@ local FARM_TYPE_TO_SEED_INDEX = {
     beetroot = 6
 }
 
+local PRESETS_BY_SEED_INDEX = {
+    wheat = farm_presets.SIMPLE,
+    carrot = farm_presets.SIMPLE,
+    potato = farm_presets.SIMPLE,
+    pumpkin = farm_presets.MELON_LIKE,
+    melon = farm_presets.MELON_LIKE,
+    beetroot = farm_presets.SIMPLE,
+}
+
 local DEFAULT_SETTINGS = {
     layers = { 'wheat', 'carrot', 'potato' }
 }
@@ -89,7 +98,7 @@ local function load_settings()
     return settings
 end
 
-local function init_seeds(preset, settings)
+local function init_seeds(settings)
     local function init_wheat()
         return {
             has_seed = true,
@@ -165,8 +174,9 @@ local function init_seeds(preset, settings)
     }
 end
 
-local function init_farms(preset, settings)
+local function init_farms(settings)
     local function init_farm(seed, layer)
+        local preset = PRESETS_BY_SEED_INDEX[seed]
         return {
             seed = seed,
             time_between_checks = 30,
@@ -187,7 +197,7 @@ local function init_farms(preset, settings)
     return res
 end
 
-local function init_world(preset, settings)
+local function init_world(settings)
     local arr = {}
     for layer=1, #settings.layers do
         local y = (layer-1) * 4
@@ -219,12 +229,11 @@ end
 local function main()
     startup.inject('programs/farm.lua')
 
-    local preset = farm_presets.SIMPLE
     local settings = load_settings()
 
     farm.main(
-        init_seeds(preset, settings),
-        init_farms(preset, settings),
+        init_seeds(settings),
+        init_farms(settings),
         { -- specific chests
             { -- seeds
                 pred = inv.new_pred_by_name('minecraft:wheat_seeds'),
@@ -264,7 +273,7 @@ local function main()
         },
         vector.new(0, -1, 0), -- fuel chest
         vector.new(0, -1, -2), -- excess chest
-        init_world(preset, settings)
+        init_world(settings)
     )
 end
 
