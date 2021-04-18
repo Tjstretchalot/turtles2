@@ -1,6 +1,7 @@
 --- This turtle is intended as a simple way to automate the gourmaryllis flower from botania
 --- Setup:
----   Place the turtle facing the food chest
+---   Place the turtle facing the first food chest and above the second
+--    food chest
 ---   Place two gourmaryllis, on the left and right side of the turtle
 ---   Make sure the turtle has at least 2 fuel
 package.path = '../?.lua;turtles2/?.lua'
@@ -26,7 +27,7 @@ local ACT_SET_OBJECTIVE = 'set_objective'
 local WORLD = {
     [tostring(vector.new(0, 0, 0))] = true
 }
-local FOOD_CHEST_LOC = vector.new(0, 0, 1)
+local FOOD_CHEST_LOCS = {vector.new(0, 0, 1), vector.new(0, -1, 0)}
 local FLOWER_LOCS = {vector.new(1, 0, 0), vector.new(-1, 0, 0)}
 local FOOD_ITEMS = {
     inv.new_pred_by_name_lookup({
@@ -55,6 +56,7 @@ local function cust_init()
     raw.context = nil
     raw.last_food_index_by_plant_index = {}
     raw.next_feed_index = 1
+    raw.next_food_chest_index = 1
     return raw
 end
 
@@ -119,22 +121,25 @@ local OBJECTIVE_TICKERS = {
         clear_mem(mem)
     end,
     [OBJ_ACQUIRE_FOOD] = function(store, mem)
-        if mem.current_path == nil then set_path(store, mem, FOOD_CHEST_LOC) end
+        local food_chest_index = store.raw.gorm.next_food_chest_index
+        if mem.current_path == nil then
+            set_path(store, mem, FOOD_CHEST_LOCS[food_chest_index])
+        end
         if not tick_path(store, mem) then
             local fn_ind = constants.MOVE_TO_FN_IND[
                 mem.current_path[#mem.current_path]]
             local suck_fn = constants.SUCK_FN[fn_ind]
-            while true do
-                if not turtle[suck_fn]() then
-                    textutils.slowPrint('add varied food')
-                    os.sleep(30)
-                    return
-                end
-                if desired_food_for_plant(store, mem, store.raw.gorm.next_feed_index) then
-                    store:dispatch(set_objective(OBJ_DROP_FOOD, nil))
-                    clear_mem(mem)
-                    return
-                end
+            store.raw.gorm.next_food_chest_index = (food_chest_index % #FOOD_CHEST_LOCS) + 1
+            if not turtle[suck_fn]() then
+                textutils.slowPrint('add varied food')
+                clear_mem(mem)
+                os.sleep(30)
+                return
+            end
+            if desired_food_for_plant(store, mem, store.raw.gorm.next_feed_index) then
+                store:dispatch(set_objective(OBJ_DROP_FOOD, nil))
+                clear_mem(mem)
+                return
             end
         end
     end,
