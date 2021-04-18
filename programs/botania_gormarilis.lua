@@ -140,7 +140,7 @@ local OBJECTIVE_TICKERS = {
     [OBJ_DROP_FOOD] = function(store, mem)
         local plant_index = store.raw.gorm.next_feed_index
         if not desired_food_for_plant(store, mem, plant_index) then
-            idle()
+            idle(store, mem)
             return
         end
         if mem.current_path == nil then set_path(store, mem, FLOWER_LOCS[plant_index]) end
