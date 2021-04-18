@@ -48,7 +48,7 @@ end
 -- have the seeds planted manually.
 farm_presets.MELON_LIKE = {
     fuel_chest = farm_presets.SIMPLE.fuel_chest,
-    excess_chest = farm_presets.SIMPLE.excess_chest
+    excess_chest = farm_presets.SIMPLE.excess_chest,
     world = { -- we fill in 9x9 below programatically
         [tostring(vector.new(0, 0, 0))] = true,
         [tostring(vector.new(-2, 0, 0))] = true,
