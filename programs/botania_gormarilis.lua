@@ -139,7 +139,8 @@ local OBJECTIVE_TICKERS = {
     end,
     [OBJ_DROP_FOOD] = function(store, mem)
         local plant_index = store.raw.gorm.next_feed_index
-        if not desired_food_for_plant(store, mem, plant_index) then
+        local food_index = desired_food_for_plant(store, mem, plant_index)
+        if not food_index then
             idle(store, mem)
             return
         end
@@ -150,6 +151,8 @@ local OBJECTIVE_TICKERS = {
             local drop_fn = constants.DROP_FN[fn_ind]
             turtle[drop_fn](1)
             store.raw.gorm.next_feed_index = (plant_index % #FLOWER_LOCS) + 1
+            store.raw.gorm.last_food_index_by_plant_index[plant_index] = food_index
+            os.sleep(2.5 / #FLOWER_LOCS)
             clear_mem(mem)
         end
     end
