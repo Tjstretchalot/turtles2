@@ -201,7 +201,7 @@ local function init_world(preset, settings)
     end
     table.insert(
         arr, farm_presets.world_rect( -- chests
-            vector.new(-2, 0, -4),
+            vector.new(-4, 0, -4),
             vector.new(2, 0, 0)
         )
     )
@@ -241,6 +241,25 @@ local function main()
             { -- potato
                 pred = inv.new_pred_by_name('minecraft:potato'),
                 loc = vector.new(-2, -1, -2)
+            },
+            { -- beetroot seeds
+                pred = inv.new_pred_by_name('minecraft:beetroot_seeds'),
+                loc = vector.new(0, -1, -4)
+            },
+            { -- pumpkins
+                pred = inv.new_pred_by_name('minecraft:pumpkin'),
+                loc = vector.new(-2, -1, -4)
+            },
+            { -- melons
+                pred = inv.new_pred_by_name_lookup({
+                    ['minecraft:melon'] = true,
+                    ['minecraft:melon_slice'] = true
+                }),
+                loc = vector.new(2, -1, -4)
+            },
+            { -- beetroot
+                pred = inv.new_pred_by_name('minecraft:beetroot'),
+                loc = vector.new(-4, -1, -4)
             }
         },
         vector.new(0, -1, 0), -- fuel chest
