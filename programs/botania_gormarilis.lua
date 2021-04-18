@@ -149,6 +149,10 @@ local OBJECTIVE_TICKERS = {
     end
 }
 
+local function tick(store, mem)
+    OBJECTIVE_TICKERS[store.raw.gorm.objective](store, mem)
+end
+
 local function main()
     startup.inject('programs/botania_gormarilis')
     home.loc()
