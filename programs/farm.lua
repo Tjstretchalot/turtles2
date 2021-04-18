@@ -1,7 +1,8 @@
 --- Vertical 9x9 farms. Note that this will not automatically plant melon
--- or pumpkin layers. They should be planted in alternating columns (i.e,
--- in the same direction and location as the turtle starts, 3 to the right
--- is the first column, then 2 left is the next column, etc).
+-- or pumpkin layers. They should be planted in columns (the direction from
+-- the fuel chest to the farms), such that the right-most column is empty,
+-- followed by two columns of seeds, followed by empty, followed by seeds in
+-- the middle column, then empty, seeds, seeds, empty.
 --
 -- Farm layout:
 --     Below the turtle is the fuel chest.

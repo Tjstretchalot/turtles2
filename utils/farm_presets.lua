@@ -66,20 +66,28 @@ local function _loc(x, z, dig_here)
     end
 end
 
+local function _row(x, forward, dig_here)
+    if forward then
+        for z=1, 9, 1 do
+            _loc(x, z, dig_here)
+        end
+    else
+        for z=9, 1, -1 do
+            _loc(x, z, dig_here)
+        end
+    end
+end
+
 -- the order for the farm part is important
-for x=-4, 0, 4 do
-    for z=1, 9, 1 do
-        _loc(x, z, true)
-        _loc(x + 1, z, false)
-    end
-    for z=9, 1, -1 do
-        _loc(x + 2, z, true)
-        _loc(x + 3, z, false)
-    end
-end
-for z=1, 9, 1 do
-    _loc(4, z, true)
-end
+_row(-4, true, true)
+_row(-3, false, false)
+_row(-2, false, false)
+_row(-1, false, true)
+_row(0, false, false)
+_row(1, true, true)
+_row(2, false, false)
+row(3, false, false)
+row(4, false, true)
 
 --- Creates a rectangular prism world which has the given vectors
 -- hollowed out
