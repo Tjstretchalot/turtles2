@@ -450,7 +450,7 @@ function Store:dispatch(action, fail_at)
         self:_update_saved_list()
     end
 
-    if #self._list > 1 and fs.getSize(self.filen .. '.list') > 4096 * 1028 then
+    if #self._list > 1 and fs.getSize(self.filen .. '.list') > 128 * 1028 then
         self:clean_and_save()
     end
 end
